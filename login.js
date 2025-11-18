@@ -11,11 +11,11 @@
 //   CLI_TARGET_USERNAME
 //   CLI_TARGET_PASSWORD
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import readline from 'node:readline';
+import fs from "node:fs/promises";
+import path from "node:path";
+import readline from "node:readline";
 
-process.on('SIGINT', handleSigInt);
+process.on("SIGINT", handleSigInt);
 
 main().catch((err) => {
   console.error(err?.stack || String(err));
@@ -23,32 +23,36 @@ main().catch((err) => {
 });
 
 async function main() {
-  const { url: urlArg, username: userArg, password: passArg } = parseSingleArg(process.argv[2]);
+  const {
+    url: urlArg,
+    username: userArg,
+    password: passArg,
+  } = parseSingleArg(process.argv[2]);
 
-  let url = normalizeUrl(urlArg || '');
-  let username = userArg || '';
-  let password = passArg || '';
+  let url = normalizeUrl(urlArg || "");
+  let username = userArg || "";
+  let password = passArg || "";
 
   const rl = createInterface();
   try {
-    console.log('https://fabric.harper.fast Cluster Login:');
-    url = normalizeUrl(await ask(rl, 'Cluster URL', url));
-    username = await ask(rl, 'Cluster Username', username);
-    password = await askHidden(rl, 'Cluster Password', password);
+    console.log("https://fabric.harper.fast Cluster Login:");
+    url = normalizeUrl(await ask(rl, "Cluster URL", url));
+    username = await ask(rl, "Cluster Username", username);
+    password = await askHidden(rl, "Cluster Password", password);
   } finally {
     rl.close();
   }
 
   if (!url) {
-    console.error('Error: Cluster URL is required.');
+    console.error("Error: Cluster URL is required.");
     process.exit(1);
   }
   if (!username) {
-    console.error('Error: Cluster Username is required.');
+    console.error("Error: Cluster Username is required.");
     process.exit(1);
   }
   if (!password) {
-    console.error('Error: Cluster Password is required.');
+    console.error("Error: Cluster Password is required.");
     process.exit(1);
   }
 
@@ -56,41 +60,49 @@ async function main() {
     `CLI_TARGET='${escapeSingleQuotes(url)}'`,
     `CLI_TARGET_USERNAME='${escapeSingleQuotes(username)}'`,
     `CLI_TARGET_PASSWORD='${escapeSingleQuotes(password)}'`,
-    '',
-  ].join('\n');
+    "",
+  ].join("\n");
 
-  const envPath = path.join(process.cwd(), '.env');
+  const envPath = path.join(process.cwd(), ".env");
   try {
     await fs.writeFile(envPath, env, { mode: 0o400 });
   } catch {
     await fs.writeFile(envPath, env);
-    await fs.chmod(envPath, 0o400).catch(() => {
-    });
+    await fs.chmod(envPath, 0o400).catch(() => {});
   }
 
-  process.stdout.write(`Saved credentials to ${path.relative(process.cwd(), envPath)}\n`);
+  process.stdout.write(
+    `Saved credentials to ${path.relative(process.cwd(), envPath)}\n`,
+  );
 }
 
 function createInterface() {
-  return readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+  return readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: true,
+  });
 }
 
-function ask(rl, question, existingValue = '') {
+function ask(rl, question, existingValue = "") {
   if (existingValue) {
     return existingValue;
   }
-  return new Promise((resolve) => rl.question(`${question}: `, (ans) => resolve(ans.trim() || existingValue)));
+  return new Promise((resolve) =>
+    rl.question(`${question}: `, (ans) => resolve(ans.trim() || existingValue)),
+  );
 }
 
-function askHidden(rl, question, existingValue = '') {
+function askHidden(rl, question, existingValue = "") {
   if (existingValue) {
     return existingValue;
   }
   // Minimal hidden prompt by muting characters while typing
-  const original = rl._writeToOutput; // eslint-disable-line no-underscore-dangle
-  rl._writeToOutput = function write(str) { // mask everything except newlines
+  const original = rl._writeToOutput;
+  rl._writeToOutput = function write(str) {
+    // mask everything except newlines
     if (this.stdoutMuted) {
-      if (str.includes('\n')) this.output.write('\n');
+      if (str.includes("\n")) this.output.write("\n");
       return; // swallow other chars
     }
     original.call(this, str);
@@ -110,9 +122,9 @@ function parseSingleArg(token) {
   // Returns { url, username, password } (any may be undefined)
   if (!token) return {};
   const s = String(token).trim();
-  const at = s.lastIndexOf('@');
-  const colon = s.indexOf(':');
-  const http = s.indexOf('http');
+  const at = s.lastIndexOf("@");
+  const colon = s.indexOf(":");
+  const http = s.indexOf("http");
 
   // user:pass@host
   if (colon !== -1 && at !== -1 && colon < at) {
@@ -141,11 +153,11 @@ function parseSingleArg(token) {
 
 function normalizeUrl(u) {
   if (!u) {
-    return '';
+    return "";
   }
   let s = String(u).trim();
   if (!s) {
-    return '';
+    return "";
   }
   if (!/^https?:\/\//i.test(s)) {
     if (/^[\d.:$].test(s)/) {
@@ -154,17 +166,17 @@ function normalizeUrl(u) {
       s = `https://${s}`;
     }
   }
-  if (!s.endsWith('/')) {
-    s = s + '/';
+  if (!s.endsWith("/")) {
+    s = s + "/";
   }
   return s;
 }
 
 function escapeSingleQuotes(v) {
-  return String(v).replace(/'/g, '\'\\\'\'');
+  return String(v).replace(/'/g, "'\\''");
 }
 
 function handleSigInt() {
-  process.stdout.write('\n');
+  process.stdout.write("\n");
   process.exit(130);
 }

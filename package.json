@@ -8,6 +8,14 @@
     "start": "harperdb run .",
     "dev": "harperdb dev .",
     "login": "node login.js",
-    "deploy": "npx -y dotenv-cli -- harperdb deploy . restart=rolling replicated=true"
+    "deploy": "npx -y dotenv-cli -- harperdb deploy . restart=rolling replicated=true",
+    "prettier": "@harperdb/code-guidelines/prettier"
+  },
+  "devDependencies": {
+    "@harperdb/code-guidelines": "^0.0.6",
+    "eslint": "^9.39.1",
+    "prettier": "^3.6.2"
+  },
+  "dependencies": {
   }
 }
