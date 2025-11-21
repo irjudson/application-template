@@ -20,3 +20,22 @@ jsResource:
 # Serve the static files from the web directory as a web application
 static:
   files: "web/*"
+
+# npm install @harperdb/mqtt-broker-interop-plugin
+# uncomment this block:
+# harper dev .
+#
+# '@harperdb/mqtt-broker-interop-plugin':
+#   package: '@harperdb/mqtt-broker-interop-plugin'
+#   debug: true
+#   # Interval in seconds for publishing $SYS topic updates
+#   sys_interval: 10
+
+# # MQTT Configuration
+# mqtt:
+#   network:
+#     port: 1883
+#     securePort: 8883 # for TLS
+#   webSocket: true # will also enable WS support through the default HTTP interface/port
+#   mTLS: false
+#   requireAuthentication: false
