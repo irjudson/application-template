@@ -1,3 +1,5 @@
+> **Historical Project** — Developed during tenure at Harper (2025–2026). Application scaffolding template for Harper-based projects with recommended structure and patterns. Preserved as a reference.
+
 # Your New Harper Fabric App
 
 This is a template for building [Harper](https://www.harper.fast/) applications. You can download this repository as a starting point for building applications with Harper.
